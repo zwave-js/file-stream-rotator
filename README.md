@@ -2,7 +2,7 @@
 file-stream-rotator
 ===================
 
-NodeJS file stream rotator
+NodeJS file stream rotator - with https://github.com/rogerc/file-stream-rotator/pull/73 merged
 
 ## Purpose
 

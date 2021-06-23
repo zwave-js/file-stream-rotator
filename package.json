@@ -1,6 +1,9 @@
 {
-    "name": "file-stream-rotator",
-    "version": "0.5.7",
+    "name": "@zwave-js/file-stream-rotator",
+    "publishConfig": {
+        "access": "public"
+    },
+    "version": "0.5.8-0",
     "description": "Automated stream rotation useful for log files",
     "main": "FileStreamRotator.js",
     "scripts": {
@@ -8,7 +11,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git://github.com/rogerc/file-stream-rotator.git"
+        "url": "git://github.com/zwave-js/file-stream-rotator.git"
     },
     "keywords": [
         "stream",
