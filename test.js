@@ -108,11 +108,12 @@ var tests = {
         var opt5 = {type: 'h', digit: 3};
         var opt6 = {type: 'm', digit: 5};
 
-        var format1 = 'YYYYMMDD';
-        var format2 = 'YYYY-MM-DD';
-        var format3 = 'YYYYMMDD.HHmmss';
-        var format4 = 'YYYY-MM-DD:HH:mm:ss';
+        var format1 = 'yyyyMMdd';
+        var format2 = 'yyyy-MM-dd';
+        var format3 = 'yyyyMMdd.HHmmss';
+        var format4 = 'yyyy-MM-dd:HH:mm:ss';
 
+        console.log('testGetDate');
         console.log(fsr.getDate(opt));
         console.log(fsr.getDate(opt1));
         console.log(fsr.getDate(opt2));
@@ -151,10 +152,10 @@ var tests = {
 
         var test = function() {
 
-            var options1 = { filename: logdir + 'program1.log', frequency: '1m', verbose: true, date_format: 'YYYY-MM-DD' };
+            var options1 = { filename: logdir + 'program1.log', frequency: '1m', verbose: true, date_format: 'yyyy-MM-dd' };
             var options2 = { filename: logdir + 'program2.log', frequency: '1m', verbose: true};
-            var options3 = { filename: logdir + 'program3-%DATE%.log', frequency: '1m', verbose: true, date_format: 'YYYY-MM-DD'};
-            var options4 = { filename: logdir + 'program4-%DATE%.log', verbose: true, date_format: 'YYYY-MM-DD'};
+            var options3 = { filename: logdir + 'program3-%DATE%.log', frequency: '1m', verbose: true, date_format: 'yyyy-MM-dd'};
+            var options4 = { filename: logdir + 'program4-%DATE%.log', verbose: true, date_format: 'yyyy-MM-dd'};
             var options5 = { filename: logdir + 'program5-%DATE%.log', verbose: true};
 
             var stream1 = fsr.getStream(options1);
@@ -169,7 +170,7 @@ var tests = {
             stream5.write('dafault date mid filename without rotation');
 
 
-            var options = { filename: logdir + 'program-%DATE%.log', frequency: '1m', verbose: true, date_format: 'YYYY-MM-DD:HH:mm' };
+            var options = { filename: logdir + 'program-%DATE%.log', frequency: '1m', verbose: true, date_format: 'yyyy-MM-dd:HH:mm' };
 
             var stream = fsr.getStream(options);
             process.__defineGetter__('stdout', function() { return stream;});
