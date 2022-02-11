@@ -1,0 +1,35 @@
+
+> @zwave-js/file-stream-rotator@0.5.8-0 test
+> node test.js
+
+3k 3072 3072
+5M 5242880 5242880
+0.5G 536870912 536870912
+0.5T null null
+1mega null null
+10 giga null null
+obj = { type: 'm', digit: 5 }
+obj = { type: 'h', digit: 24 }
+obj = { type: 'h', digit: 23 }
+testGetDate
+202202111127
+202202111127
+202202111127
+202202111100
+202202111100
+202202110927
+202202111125
+20220211
+2022-02-11
+20220211.112747
+2022-02-11:11:27:47
+{
+  keep: { days: true, amount: 10 },
+  auditLog: '/tmp/a/b/c/files/.audit.json',
+  files: []
+}
+{
+  keep: { days: false, amount: 10 },
+  auditLog: '/tmp/a/b/log_audit_file.json',
+  files: []
+}
