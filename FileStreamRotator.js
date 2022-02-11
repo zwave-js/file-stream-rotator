@@ -12,8 +12,8 @@
  */
 var fs = require('fs');
 var path = require('path');
-var moment = require('moment');
 var crypto = require('crypto');
+const { format, formatInTimeZone } = require('date-fns-tz');
 
 var EventEmitter = require('events');
 
@@ -27,11 +27,11 @@ var EventEmitter = require('events');
  *   - `filename`       Filename including full path used by the stream
  *
  *   - `frequency`      How often to rotate. Options are 'daily', 'custom' and 'test'. 'test' rotates every minute.
- *                      If frequency is set to none of the above, a YYYYMMDD string will be added to the end of the filename.
+ *                      If frequency is set to none of the above, a yyyyMMdd string will be added to the end of the filename.
  *
  *   - `verbose`        If set, it will log to STDOUT when it rotates files and name of log file. Default is TRUE.
  *
- *   - `date_format`    Format as used in moment.js http://momentjs.com/docs/#/displaying/format/. The result is used to replace
+ *   - `date_format`    Format as used in date-fns https://date-fns.org/v2.28.0/docs/format. The result is used to replace
  *                      the '%DATE%' placeholder in the filename.
  *                      If using 'custom' frequency, it is used to trigger file change when the string representation changes.
  *
@@ -75,7 +75,7 @@ var FileStreamRotator = {};
 module.exports = FileStreamRotator;
 
 var staticFrequency = ['daily', 'test', 'm', 'h', 'custom'];
-var DATE_FORMAT = ('YYYYMMDDHHmm');
+var DATE_FORMAT = ('yyyyMMddHHmm');
 
 
 /**
@@ -165,31 +165,34 @@ FileStreamRotator.parseFileSize = function (size) {
 
 /**
  * Returns date string for a given format / date_format
- * @param format
+ * @param formatOptions
  * @param date_format
  * @param {boolean} utc
  * @returns {string}
  */
-FileStreamRotator.getDate = function (format, date_format, utc) {
+FileStreamRotator.getDate = function (formatOptions, date_format, utc) {
     date_format = date_format || DATE_FORMAT;
-    let currentMoment = utc ? moment.utc() : moment().local()
-    if (format && staticFrequency.indexOf(format.type) !== -1) {
-        switch (format.type) {
+    let logDate = new Date();
+
+    if (formatOptions && staticFrequency.indexOf(formatOptions.type) !== -1) {
+        switch (formatOptions.type) {
             case 'm':
-                var minute = Math.floor(currentMoment.minutes() / format.digit) * format.digit;
-                return currentMoment.minutes(minute).format(date_format);
+                var minute = Math.floor(logDate.getMinutes() / formatOptions.digit) * formatOptions.digit;
+                logDate.setMinutes(minute);
                 break;
             case 'h':
-                var hour = Math.floor(currentMoment.hour() / format.digit) * format.digit;
-                return currentMoment.hour(hour).format(date_format);
+                var hour = Math.floor(logDate.getHours() / formatOptions.digit) * formatOptions.digit;
+                logDate.setHours(hour)
                 break;
             case 'daily':
             case 'custom':
             case 'test':
-                return currentMoment.format(date_format);
+                break;
         }
     }
-    return currentMoment.format(date_format);
+    if (utc)
+        return formatInTimeZone(logDate, 'Zulu', date_format);
+    return format(logDate, date_format);
 }
 
 /**
@@ -378,7 +381,8 @@ FileStreamRotator.addLogToAudit = function(logfile, audit, stream, verbose){
         });
 
         if(audit.keep.days){
-            var oldestDate = moment().subtract(audit.keep.amount,"days").valueOf();
+            let oldestDate = new Date();
+            oldestDate.setDate(oldestDate.getDate() - audit.keep.amount);
             var recentFiles = audit.files.filter(function(file){
                 if(file.date > oldestDate){
                     return true;
@@ -451,9 +455,12 @@ FileStreamRotator.getStream = function (options) {
     var dateFormat = (options.date_format || DATE_FORMAT);
     if(frequencyMetaData && frequencyMetaData.type == "daily"){
         if(!options.date_format){
-            dateFormat = "YYYY-MM-DD";
+            dateFormat = "yyyy-MM-dd";
         }
-        if(moment().format(dateFormat) != moment().endOf("day").format(dateFormat) || moment().format(dateFormat) == moment().add(1,"day").format(dateFormat)){
+        const now = new Date();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday - 1);
+        if(format(now, dateFormat) == format(yesterday, dateFormat)){
             if(self.verbose){
                 console.log(new Date(),"[FileStreamRotator] Changing type to custom as date format changes more often than once a day or not every day");
             }
@@ -556,7 +563,7 @@ FileStreamRotator.getStream = function (options) {
             if(!options.watch_log){
                 return
             }
-            // console.log("ADDING WATCHER", newLog)
+            // console.log("AddING WATCHER", newLog)
             logWatcher = createLogWatcher(newLog, self.verbose, function(err,newLog){
                 stream.emit('createLog', newLog)
             })        

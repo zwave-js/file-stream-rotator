@@ -28,6 +28,6 @@
     "author": "Roger Castells",
     "license": "MIT",
     "dependencies": {
-        "moment": "^2.11.2"
+        "date-fns-tz": "^1.2.2"
     }
 }
