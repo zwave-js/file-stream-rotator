@@ -13,8 +13,7 @@
 var fs = require('fs');
 var path = require('path');
 var crypto = require('crypto');
-var {format, formatInTimeZone} = require('date-fns-tz');
-var { endOfDay } = require('date-fns');
+const { format, formatInTimeZone } = require('date-fns-tz');
 
 var EventEmitter = require('events');
 
@@ -461,7 +460,7 @@ FileStreamRotator.getStream = function (options) {
         const now = new Date();
         const yesterday = new Date();
         yesterday.setDate(yesterday - 1);
-        if(format(now, dateFormat) != format(endOfDay(now), dateFormat) || format(now, dateFormat) == format(yesterday, dateFormat)){
+        if(format(now, dateFormat) == format(yesterday, dateFormat)){
             if(self.verbose){
                 console.log(new Date(),"[FileStreamRotator] Changing type to custom as date format changes more often than once a day or not every day");
             }
